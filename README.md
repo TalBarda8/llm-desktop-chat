@@ -77,15 +77,27 @@ A desktop chat application that connects to local LLM models via the Ollama API.
 
 ### Starting the Application
 
-1. **Activate your virtual environment** (if you created one):
+**Easiest method** - Use the startup script:
+```bash
+./start.sh
+```
+
+This script automatically activates the virtual environment and launches the application.
+
+**Alternative methods**:
+
+1. Activate venv first, then run:
    ```bash
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-2. **Run the application**:
-   ```bash
    python -m src.main
    ```
+
+2. Run directly with venv Python:
+   ```bash
+   venv/bin/python -m src.main
+   ```
+
+**Important**: Don't use `python3 -m src.main` directly without activating the venv first, as it may use your system Python which could have an incompatible Tkinter version.
 
 ### Using the Chat Interface
 
