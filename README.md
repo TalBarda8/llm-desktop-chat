@@ -5,6 +5,7 @@ A desktop chat application that connects to local LLM models via the Ollama API.
 ## Table of Contents
 
 - [Features](#features)
+- [Documentation](#documentation)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -54,6 +55,16 @@ A desktop chat application that connects to local LLM models via the Ollama API.
   - **Quick Switching**: Click any conversation to instantly load it
   - **Delete Conversations**: Remove conversations you no longer need
   - Conversations are titled automatically from the first message
+
+## Documentation
+
+Comprehensive documentation about the development process and methodology:
+
+- **[Product Requirements Document (PRD)](Documentation/PRD.md)** - Complete product specifications, user stories, technical requirements, and feature specifications
+- **[Development Process](Documentation/PROCESS.md)** - Workflow, methodology, Git strategy, testing approach, challenges and solutions, and lessons learned during development
+- **[Prompt Engineering](Documentation/PROMPTS.md)** - AI collaboration techniques, prompt strategies, and refinement process used in this project
+
+These documents provide insight into how this project was planned, developed, and refined using modern software development practices with AI assistance.
 
 ## Prerequisites
 

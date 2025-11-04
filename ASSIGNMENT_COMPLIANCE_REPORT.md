@@ -196,6 +196,8 @@ black>=23.0.0
 
 **Total Documentation:** 16,500+ words across 3 comprehensive files
 
+**Discoverability:** All documentation files are linked in README.md under the "Documentation" section for easy access and navigation.
+
 ### 4. Conversation History / Side Menu ✅
 **Status**: ✅ **IMPLEMENTED** (as of conversation history feature)
 
