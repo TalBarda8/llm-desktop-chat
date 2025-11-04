@@ -97,7 +97,7 @@ class TestSettings:
             with pytest.raises(Exception):  # Pydantic validation error
                 Settings()
 
-    def test_settings_immutable_after_creation(self):
+    def test_settings_mutable_after_creation(self):
         """Test that settings can be modified after creation"""
         settings = Settings()
         original_model = settings.default_model

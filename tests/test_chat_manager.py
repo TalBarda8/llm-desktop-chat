@@ -2,7 +2,7 @@
 Unit tests for ChatManager class
 """
 import pytest
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock
 from src.core.chat_manager import ChatManager
 from src.core.message import Message, Role, Conversation
 from src.api.ollama_client import OllamaClient

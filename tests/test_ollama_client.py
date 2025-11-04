@@ -3,7 +3,7 @@ Unit tests for OllamaClient class
 """
 import pytest
 import json
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from src.api.ollama_client import OllamaClient
 from src.utils.exceptions import OllamaConnectionError
 

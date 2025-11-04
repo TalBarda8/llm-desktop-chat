@@ -288,13 +288,15 @@ pytest tests/ -v -s
 
 ### Test Coverage
 
-Current test coverage for core modules:
+Current test coverage for core modules (as of latest test run):
 - **ChatManager**: 100% coverage
 - **Message & Conversation**: 100% coverage
 - **OllamaClient**: 87% coverage
 - **Settings**: 100% coverage
 - **Exceptions**: 100% coverage
 - **Logger**: 100% coverage
+
+*Note: Run `pytest tests/ --cov=src --cov-report=term-missing` to see the latest coverage report.*
 
 ### Test Structure
 
