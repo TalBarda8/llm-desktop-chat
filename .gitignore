@@ -41,6 +41,9 @@ logs/
 # Environment variables
 .env
 
+# User data
+conversations/
+
 # OS
 .DS_Store
 Thumbs.db

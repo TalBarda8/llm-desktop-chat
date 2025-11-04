@@ -13,7 +13,13 @@ A desktop chat application that connects to local LLM models via the Ollama API.
   - Smooth hover effects on interactive elements
   - Card-based layout with comfortable spacing
   - Modern typography (Segoe UI font)
-- **Conversation Management**: Start new chats and maintain conversation context
+- **Conversation Management**:
+  - Start new chats and maintain conversation context
+  - **Conversation History Sidebar**: Browse and access all your past conversations
+  - **Persistent Storage**: All conversations are automatically saved to disk
+  - **Quick Switching**: Click any conversation to instantly load it
+  - **Delete Conversations**: Remove conversations you no longer need
+  - Conversations are titled automatically from the first message
 
 ## Prerequisites
 
@@ -106,12 +112,15 @@ This script automatically activates the virtual environment and launches the app
 
 ### Using the Chat Interface
 
-1. **Select a Model**: Use the dropdown in the top toolbar to choose your model
-2. **Toggle Theme**: Click the "🌙 Dark" or "☀️ Light" button to switch between light and dark themes
-3. **Type Your Message**: Enter your message in the text box at the bottom
-4. **Send**: Click "Send →" or press Enter (Shift+Enter for new line)
-5. **View Response**: Watch the AI's response stream in real-time with modern styling
-6. **New Chat**: Click "✨ New Chat" to start a fresh conversation
+1. **Browse Conversations**: The left sidebar shows all your saved conversations
+2. **Load a Conversation**: Click any conversation in the sidebar to load it
+3. **Select a Model**: Use the dropdown in the top toolbar to choose your model
+4. **Toggle Theme**: Click the "🌙 Dark" or "☀️ Light" button to switch between light and dark themes
+5. **Type Your Message**: Enter your message in the text box at the bottom
+6. **Send**: Click "Send →" or press Enter (Shift+Enter for new line)
+7. **View Response**: Watch the AI's response stream in real-time with modern styling
+8. **New Chat**: Click "+ New Chat" in the sidebar to start a fresh conversation
+9. **Delete**: Select a conversation and click "🗑️ Delete" to remove it
 
 ### Example Conversation
 
@@ -217,14 +226,21 @@ llm-desktop-chat/
 │   │   ├── chat_manager.py     # Business logic
 │   │   └── message.py          # Data models
 │   ├── gui/
-│   │   └── app.py              # Tkinter GUI
+│   │   └── app.py              # Tkinter GUI with sidebar
+│   ├── storage/
+│   │   └── conversation_storage.py  # Conversation persistence
 │   ├── config/
 │   │   └── settings.py         # Configuration
 │   └── utils/
 │       ├── logger.py           # Logging setup
 │       └── exceptions.py       # Custom exceptions
 ├── tests/
-│   └── test_message.py         # Unit tests
+│   ├── test_message.py         # Message model tests
+│   ├── test_chat_manager.py   # Chat manager tests
+│   ├── test_ollama_client.py  # API client tests
+│   ├── test_settings.py        # Settings tests
+│   └── test_conversation_storage.py  # Storage tests
+├── conversations/              # Saved conversations (JSON)
 ├── logs/                       # Application logs
 ├── requirements.txt
 └── README.md
@@ -243,13 +259,23 @@ llm-desktop-chat/
    - Manages conversation state
    - Orchestrates API calls
    - Maintains message history
+   - Handles multiple conversation switching
+   - Auto-saves conversations
 
-3. **ChatApplication** (`src/gui/app.py`)
+3. **ConversationStorage** (`src/storage/conversation_storage.py`)
+   - Persists conversations to disk as JSON files
+   - Loads and lists saved conversations
+   - Generates conversation titles from first message
+   - Handles conversation deletion
+
+4. **ChatApplication** (`src/gui/app.py`)
    - Tkinter-based user interface
+   - Conversation history sidebar
    - Real-time message display
    - Input handling and validation
+   - Theme switching support
 
-4. **Message & Conversation** (`src/core/message.py`)
+5. **Message & Conversation** (`src/core/message.py`)
    - Data models for messages
    - Conversation management
    - API format conversion
@@ -274,7 +300,7 @@ ChatManager adds complete response to conversation
 
 ## Testing
 
-The project includes comprehensive unit tests covering all core functionality with 47 test cases.
+The project includes comprehensive unit tests covering all core functionality with 62 test cases.
 
 ### Running Tests
 
@@ -286,10 +312,11 @@ pytest tests/ -v
 
 **Run specific test file:**
 ```bash
-pytest tests/test_message.py -v          # Message and Conversation tests
-pytest tests/test_chat_manager.py -v     # ChatManager tests
-pytest tests/test_ollama_client.py -v    # OllamaClient tests
-pytest tests/test_settings.py -v         # Settings configuration tests
+pytest tests/test_message.py -v              # Message and Conversation tests
+pytest tests/test_chat_manager.py -v         # ChatManager tests
+pytest tests/test_ollama_client.py -v        # OllamaClient tests
+pytest tests/test_settings.py -v             # Settings configuration tests
+pytest tests/test_conversation_storage.py -v # ConversationStorage tests
 ```
 
 **Run with coverage report:**
@@ -307,6 +334,7 @@ pytest tests/ -v -s
 Current test coverage for core modules (as of latest test run):
 - **ChatManager**: 100% coverage
 - **Message & Conversation**: 100% coverage
+- **ConversationStorage**: 100% coverage
 - **OllamaClient**: 87% coverage
 - **Settings**: 100% coverage
 - **Exceptions**: 100% coverage
@@ -319,10 +347,11 @@ Current test coverage for core modules (as of latest test run):
 ```
 tests/
 ├── __init__.py
-├── test_message.py          # Tests for Message and Conversation models
-├── test_chat_manager.py     # Tests for ChatManager business logic
-├── test_ollama_client.py    # Tests for Ollama API client (with mocks)
-└── test_settings.py         # Tests for configuration settings
+├── test_message.py              # Tests for Message and Conversation models
+├── test_chat_manager.py         # Tests for ChatManager business logic
+├── test_ollama_client.py        # Tests for Ollama API client (with mocks)
+├── test_settings.py             # Tests for configuration settings
+└── test_conversation_storage.py # Tests for conversation persistence
 ```
 
 ### What's Tested
@@ -355,6 +384,17 @@ tests/
 - Custom configuration
 - Type validation
 - Case-insensitive environment variables
+
+#### ConversationStorage (`test_conversation_storage.py`)
+- Saving conversations to disk
+- Loading conversations from storage
+- Listing all conversations with metadata
+- Deleting conversations
+- Title generation from first message
+- Title truncation for long messages
+- Conversation persistence and updates
+- Message ID and timestamp preservation
+- Sorted conversation lists (most recent first)
 
 ### Writing New Tests
 
@@ -473,11 +513,12 @@ All settings can be customized in `.env` file:
 - ✅ **Light & Dark Theme** support with seamless switching
 - ✅ **Hover Effects** on interactive elements
 - ✅ **High Contrast Colors** for excellent readability
+- ✅ **Conversation History Sidebar** with persistent storage
+- ✅ **Save/Load Conversations** automatically to disk
+- ✅ **Delete Conversations** with confirmation dialog
+- ✅ **Quick Conversation Switching** via sidebar
 
 ## Future Enhancements (Post-MVP)
-
-- 💡 Save/load conversation history to disk
-- 💡 Multiple conversation tabs
 - 💡 Message editing and regeneration
 - 💡 Code syntax highlighting
 - 💡 Export conversations (markdown, PDF)

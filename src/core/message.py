@@ -47,15 +47,31 @@ class Conversation:
     Represents a chat conversation with multiple messages
 
     Attributes:
-        id: Unique conversation identifier
-        messages: List of messages in the conversation
         model: The LLM model being used
+        conversation_id: Optional ID (generates new UUID if not provided)
+        id: Unique conversation identifier (alias for conversation_id)
+        messages: List of messages in the conversation
         created_at: When the conversation started
     """
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    messages: List[Message] = field(default_factory=list)
     model: str = "llama2"
+    conversation_id: str = None
+    messages: List[Message] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.now)
+
+    def __post_init__(self):
+        """Initialize conversation ID if not provided"""
+        if self.conversation_id is None:
+            self.conversation_id = str(uuid.uuid4())
+
+    @property
+    def id(self) -> str:
+        """Get conversation ID (alias for conversation_id)"""
+        return self.conversation_id
+
+    @id.setter
+    def id(self, value: str):
+        """Set conversation ID (alias for conversation_id)"""
+        self.conversation_id = value
 
     def add_message(self, message: Message) -> None:
         """Add a message to the conversation"""

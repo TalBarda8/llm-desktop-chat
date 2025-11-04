@@ -86,6 +86,9 @@ class ChatApplication:
         # Load available models
         self._load_models()
 
+        # Load conversation list
+        self._load_conversation_list()
+
         # Start new conversation
         self.chat_manager.start_new_conversation()
 
@@ -128,8 +131,105 @@ class ChatApplication:
         """Create and layout all UI components with modern styling"""
         colors = self._get_theme_colors()
 
+        # ============= MAIN CONTAINER (SIDEBAR + CONTENT) =============
+        main_container = tk.Frame(self.window, bg=colors['bg'])
+        main_container.pack(fill=tk.BOTH, expand=True)
+
+        # ============= SIDEBAR (CONVERSATION HISTORY) =============
+        sidebar = tk.Frame(
+            main_container,
+            bg=colors['surface'],
+            width=250,
+            highlightbackground=colors['border'],
+            highlightthickness=1
+        )
+        sidebar.pack(side=tk.LEFT, fill=tk.Y)
+        sidebar.pack_propagate(False)
+
+        # Sidebar header
+        sidebar_header = tk.Frame(sidebar, bg=colors['surface'])
+        sidebar_header.pack(fill=tk.X, padx=15, pady=15)
+
+        sidebar_title = tk.Label(
+            sidebar_header,
+            text="Conversations",
+            bg=colors['surface'],
+            fg=colors['text_primary'],
+            font=("Segoe UI", 12, "bold")
+        )
+        sidebar_title.pack()
+
+        # Scrollable conversation list
+        list_frame = tk.Frame(sidebar, bg=colors['surface'])
+        list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+
+        scrollbar = tk.Scrollbar(list_frame, bg=colors['surface'])
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.conversation_listbox = tk.Listbox(
+            list_frame,
+            bg=colors['surface'],
+            fg=colors['text_primary'],
+            font=("Segoe UI", 10),
+            relief=tk.FLAT,
+            borderwidth=0,
+            highlightthickness=0,
+            selectbackground=colors['primary'],
+            selectforeground="white",
+            yscrollcommand=scrollbar.set,
+            activestyle='none'
+        )
+        self.conversation_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.config(command=self.conversation_listbox.yview)
+
+        # Bind click event
+        self.conversation_listbox.bind("<<ListboxSelect>>", self._on_conversation_select)
+
+        # Sidebar footer with New Chat and Delete buttons
+        sidebar_footer = tk.Frame(sidebar, bg=colors['surface'])
+        sidebar_footer.pack(fill=tk.X, padx=10, pady=(0, 15))
+
+        # New Chat button (in sidebar)
+        sidebar_new_btn = tk.Button(
+            sidebar_footer,
+            text="+ New Chat",
+            command=self._on_new_chat,
+            bg=colors['primary'],
+            fg="white",
+            font=("Segoe UI", 10, "bold"),
+            relief=tk.FLAT,
+            padx=15,
+            pady=8,
+            cursor="hand2",
+            borderwidth=0
+        )
+        sidebar_new_btn.pack(fill=tk.X, pady=(0, 5))
+        self._add_button_hover(sidebar_new_btn, colors['primary'], colors['primary_hover'])
+
+        # Delete button
+        self.delete_btn = tk.Button(
+            sidebar_footer,
+            text="🗑️ Delete",
+            command=self._on_delete_conversation,
+            bg=colors['surface_variant'],
+            fg=colors['text_primary'],
+            font=("Segoe UI", 10),
+            relief=tk.FLAT,
+            padx=15,
+            pady=8,
+            cursor="hand2",
+            borderwidth=0,
+            state=tk.DISABLED
+        )
+        self.delete_btn.pack(fill=tk.X)
+        self._add_button_hover(self.delete_btn, colors['surface_variant'], colors['border'])
+
+        # ============= CONTENT AREA (TOOLBAR + CHAT + INPUT) =============
+        content_area = tk.Frame(main_container, bg=colors['bg'])
+        content_area.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
         # ============= TOP TOOLBAR (MODERN DESIGN) =============
-        toolbar = tk.Frame(self.window, bg=colors['surface'], height=70)
+        toolbar = tk.Frame(content_area, bg=colors['surface'], height=70)
         toolbar.pack(side=tk.TOP, fill=tk.X, padx=0, pady=0)
         toolbar.pack_propagate(False)
 
@@ -214,7 +314,7 @@ class ChatApplication:
 
         # ============= CHAT DISPLAY AREA (MODERN CARD DESIGN) =============
         # Container with padding
-        chat_container = tk.Frame(self.window, bg=colors['bg'])
+        chat_container = tk.Frame(content_area, bg=colors['bg'])
         chat_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
         # Chat frame (card style)
@@ -272,7 +372,7 @@ class ChatApplication:
         self.chat_display.config(state=tk.DISABLED)
 
         # ============= INPUT AREA (MODERN DESIGN) =============
-        input_container = tk.Frame(self.window, bg=colors['bg'])
+        input_container = tk.Frame(content_area, bg=colors['bg'])
         input_container.pack(side=tk.BOTTOM, fill=tk.X, padx=20, pady=(0, 20))
 
         # Input frame with card styling
@@ -354,6 +454,9 @@ class ChatApplication:
 
         self._setup_ui()
 
+        # Reload conversation list
+        self._load_conversation_list()
+
         # Restore conversation
         if messages:
             self.chat_display.config(state=tk.NORMAL)
@@ -406,6 +509,14 @@ class ChatApplication:
 
         # Start new conversation
         self.chat_manager.start_new_conversation()
+
+        # Refresh conversation list (new conversation will appear after first message)
+        self._load_conversation_list()
+
+        # Clear selection and disable delete button
+        self.conversation_listbox.selection_clear(0, tk.END)
+        self.delete_btn.config(state=tk.DISABLED)
+
         logger.info("New chat started")
 
     def _on_enter_key(self, event) -> str:
@@ -471,6 +582,9 @@ class ChatApplication:
 
             # Finalize response display
             self._finalize_assistant_message()
+
+            # Refresh conversation list (in case this was a new conversation)
+            self.window.after(0, self._load_conversation_list)
 
         except Exception as e:
             logger.error(f"Error sending message: {e}")
@@ -556,6 +670,109 @@ class ChatApplication:
         else:
             self.send_btn.config(bg=colors['success'])
             self.message_input.focus()
+
+    def _load_conversation_list(self) -> None:
+        """Load and display conversation list in sidebar"""
+        # Clear current list
+        self.conversation_listbox.delete(0, tk.END)
+
+        # Get conversations from storage
+        conversations = self.chat_manager.get_conversation_list()
+
+        # Store conversation IDs for later reference
+        self.conversation_ids = []
+
+        # Add each conversation to listbox
+        for conv in conversations:
+            title = conv.get('title', 'Untitled')
+            # Truncate long titles
+            if len(title) > 30:
+                title = title[:27] + "..."
+
+            self.conversation_listbox.insert(tk.END, title)
+            self.conversation_ids.append(conv['id'])
+
+        logger.info(f"Loaded {len(conversations)} conversations in sidebar")
+
+    def _on_conversation_select(self, event=None) -> None:
+        """Handle conversation selection from sidebar"""
+        selection = self.conversation_listbox.curselection()
+        if not selection:
+            self.delete_btn.config(state=tk.DISABLED)
+            return
+
+        # Enable delete button
+        self.delete_btn.config(state=tk.NORMAL)
+
+        # Get selected conversation ID
+        index = selection[0]
+        conversation_id = self.conversation_ids[index]
+
+        # Don't reload if it's already the current conversation
+        current_id = self.chat_manager.get_current_conversation_id()
+        if current_id == conversation_id:
+            return
+
+        # Load the conversation
+        success = self.chat_manager.load_conversation(conversation_id)
+        if success:
+            # Clear and reload chat display
+            self.chat_display.config(state=tk.NORMAL)
+            self.chat_display.delete(1.0, tk.END)
+
+            # Display all messages
+            messages = self.chat_manager.get_messages()
+            for msg in messages:
+                sender = "You" if msg.role == Role.USER else "Assistant"
+                tag = "user" if msg.role == Role.USER else "assistant"
+                self._display_message(sender, msg.content, tag)
+
+            self.chat_display.config(state=tk.DISABLED)
+
+            # Update model selector
+            self.model_var.set(self.chat_manager.current_model)
+
+            logger.info(f"Loaded conversation: {conversation_id}")
+        else:
+            messagebox.showerror("Error", "Failed to load conversation")
+
+    def _on_delete_conversation(self) -> None:
+        """Handle delete button click"""
+        selection = self.conversation_listbox.curselection()
+        if not selection:
+            return
+
+        # Confirm deletion
+        result = messagebox.askyesno(
+            "Delete Conversation",
+            "Are you sure you want to delete this conversation? This cannot be undone."
+        )
+
+        if not result:
+            return
+
+        # Get selected conversation ID
+        index = selection[0]
+        conversation_id = self.conversation_ids[index]
+
+        # Delete the conversation
+        success = self.chat_manager.delete_conversation(conversation_id)
+        if success:
+            # If we deleted the current conversation, clear display
+            if self.chat_manager.get_current_conversation_id() is None:
+                self.chat_display.config(state=tk.NORMAL)
+                self.chat_display.delete(1.0, tk.END)
+                self.chat_display.config(state=tk.DISABLED)
+
+            # Refresh conversation list
+            self._load_conversation_list()
+
+            # Disable delete button
+            self.delete_btn.config(state=tk.DISABLED)
+
+            logger.info(f"Deleted conversation: {conversation_id}")
+        else:
+            messagebox.showerror("Error", "Failed to delete conversation")
 
     def run(self) -> None:
         """Start the Tkinter main event loop"""
