@@ -139,80 +139,43 @@ That's it! Python's syntax is designed to be clean and readable...
 
 ## Screenshots
 
-Visual guide to the modern, redesigned application interface.
+Visual guide to the modern application interface with conversation history feature.
 
-### Main Chat Interface (Light Theme)
-**Description**: The main application window with modern, clean design in light theme.
-- **Modern Top Toolbar**: Clean layout with model selector, theme toggle (🌙 Dark), and "✨ New Chat" button
-- **Card-Based Chat Display**: Professional card layout with comfortable spacing and modern typography
-- **Styled Input Area**: Contemporary input field with "Send →" button featuring hover effects
-- **High Contrast Colors**: Modern indigo blue for user messages, emerald green for assistant responses
+### Light Theme with Conversation Sidebar
 
-**What to show**: Full application window showcasing the modern light theme with card-based design.
+![Light Theme Interface](docs/images/light-theme-with-sidebar.png)
 
-### Dark Theme Interface
-**Description**: The same interface in elegant dark mode for reduced eye strain.
-- **Dark Surface Colors**: Professional dark grays with proper contrast
+**Features shown**:
+- **Conversation History Sidebar**: Left panel showing all saved conversations with auto-generated titles
+- **Light Theme**: Clean, modern light color scheme with high contrast
+- **Model Selector**: Dropdown to switch between Ollama models (llama2:latest shown)
+- **Theme Toggle**: 🌙 Dark button to switch to dark mode
+- **New Chat Button**: ✨ New Chat to start fresh conversations
+- **Active Conversation**: Selected conversation highlighted in the sidebar
+- **Delete Button**: 🗑️ Delete to remove conversations
+- **Chat Display**: Card-based layout showing user and assistant messages
+- **Input Area**: Message input field at the bottom
+
+### Dark Theme with Conversation Sidebar
+
+![Dark Theme Interface](docs/images/dark-theme-with-sidebar.png)
+
+**Features shown**:
+- **Dark Theme**: Professional dark color scheme for reduced eye strain
+- **Same Layout**: Identical functionality with dark surfaces and text
+- **Theme Toggle**: ☀️ Light button to switch back to light mode
 - **Enhanced Readability**: Optimized text colors for dark backgrounds
-- **Modern Accents**: Brighter purple and green tones for dark theme
-- **Seamless Theme Switching**: Toggle between themes without losing conversation
+- **Modern Accents**: Indigo and emerald color scheme adapted for dark mode
+- **Conversation Persistence**: Same conversation list maintained across theme switches
 
-**What to show**: Application in dark mode showing the cohesive color scheme.
+### Demo Video
 
-### Model Selection
-**Description**: The model dropdown menu showing available Ollama models.
-- Shows all locally available models (llama2, mistral, codellama, etc.)
-- Selected model is highlighted
-- Easy switching between models mid-conversation
-
-**What to show**: Dropdown menu expanded with multiple model options visible.
-
-### Real-Time Streaming
-**Description**: Live streaming of AI response as it's being generated.
-- Text appears word-by-word in real-time
-- Demonstrates the streaming capability
-- Shows natural conversation flow
-
-**What to show**: Screenshot captured during streaming with partial AI response visible.
-
-### Multi-Turn Conversation
-**Description**: Extended conversation showing context retention.
-- Multiple back-and-forth exchanges
-- AI remembers previous context
-- Clean message separation between user and assistant
-
-**What to show**: Conversation with at least 4-6 messages showing context awareness.
-
-### New Chat Functionality
-**Description**: Starting a fresh conversation.
-- Empty chat display after clicking "New Chat"
-- Model selector ready for new conversation
-- Clean slate for new topic
-
-**What to show**: Empty chat interface after starting new conversation.
-
-### Error Handling
-**Description**: User-friendly error messages when issues occur.
-- Connection error when Ollama is not running
-- Clear error message displayed in the interface
-- Guidance on how to resolve the issue
-
-**What to show**: Error message dialog or inline error notification.
-
-### Code Formatting Example
-**Description**: How the application displays code in responses.
-- AI response containing code blocks
-- Monospace font for code sections
-- Readable formatting
-
-**What to show**: Conversation where AI provides code examples (Python, JavaScript, etc.).
-
----
-
-**Note**: To add actual screenshots, capture the application running locally and save images in a `docs/images/` directory. Then update this section with image references:
-```markdown
-![Main Chat Interface](docs/images/main-interface.png)
-```
+For a live demonstration of the application in action, see the [demo video](docs/images/demo-video.mov) showing:
+- Real-time streaming responses
+- Conversation switching via sidebar
+- Theme toggling between light and dark modes
+- Creating new conversations
+- Model selection
 
 ## Project Structure
 
