@@ -1,9 +1,10 @@
 """
 Chat manager - orchestrates conversation state and API communication
 """
-from typing import List, Callable, Optional
+from typing import List, Callable, Optional, Dict
 from .message import Message, Role, Conversation
 from ..api.ollama_client import OllamaClient
+from ..storage.conversation_storage import ConversationStorage
 from ..utils.logger import setup_logger
 
 logger = setup_logger("chat_manager", "logs/app.log")
@@ -18,17 +19,19 @@ class ChatManager:
     message sending/receiving.
     """
 
-    def __init__(self, ollama_client: OllamaClient):
+    def __init__(self, ollama_client: OllamaClient, storage_dir: str = "conversations"):
         """
         Initialize the chat manager
 
         Args:
             ollama_client: Instance of OllamaClient for API communication
+            storage_dir: Directory to store conversation files
         """
         self.client = ollama_client
+        self.storage = ConversationStorage(storage_dir)
         self.current_conversation: Optional[Conversation] = None
         self.current_model: str = "llama2"
-        logger.info("Chat manager initialized")
+        logger.info("Chat manager initialized with conversation storage")
 
     def start_new_conversation(self, model: str = None) -> None:
         """
@@ -87,6 +90,10 @@ class ChatManager:
             self.current_conversation.add_message(assistant_message)
             logger.info(f"Assistant response completed: {len(full_response)} chars")
 
+            # Auto-save conversation after each message exchange
+            self.storage.save_conversation(self.current_conversation)
+            logger.info(f"Conversation auto-saved: {self.current_conversation.id}")
+
         except Exception as e:
             logger.error(f"Error during message sending: {e}")
             raise
@@ -119,3 +126,75 @@ class ChatManager:
         if self.current_conversation:
             self.current_conversation.clear()
             logger.info("Conversation cleared")
+
+    def load_conversation(self, conversation_id: str) -> bool:
+        """
+        Load a conversation from storage and make it the current conversation
+
+        Args:
+            conversation_id: ID of conversation to load
+
+        Returns:
+            True if loaded successfully, False otherwise
+        """
+        conversation = self.storage.load_conversation(conversation_id)
+        if conversation:
+            self.current_conversation = conversation
+            self.current_model = conversation.model
+            logger.info(f"Loaded conversation: {conversation_id}")
+            return True
+        else:
+            logger.warning(f"Failed to load conversation: {conversation_id}")
+            return False
+
+    def switch_conversation(self, conversation_id: str) -> bool:
+        """
+        Switch to a different conversation
+
+        This is an alias for load_conversation for clarity in UI code
+
+        Args:
+            conversation_id: ID of conversation to switch to
+
+        Returns:
+            True if switched successfully, False otherwise
+        """
+        return self.load_conversation(conversation_id)
+
+    def get_conversation_list(self) -> List[Dict[str, str]]:
+        """
+        Get list of all saved conversations with metadata
+
+        Returns:
+            List of conversation metadata dictionaries
+        """
+        return self.storage.list_conversations()
+
+    def delete_conversation(self, conversation_id: str) -> bool:
+        """
+        Delete a conversation from storage
+
+        Args:
+            conversation_id: ID of conversation to delete
+
+        Returns:
+            True if deleted successfully, False otherwise
+        """
+        success = self.storage.delete_conversation(conversation_id)
+        if success:
+            # If we deleted the current conversation, clear it
+            if self.current_conversation and self.current_conversation.id == conversation_id:
+                self.current_conversation = None
+                logger.info("Deleted current conversation, cleared active conversation")
+        return success
+
+    def get_current_conversation_id(self) -> Optional[str]:
+        """
+        Get the ID of the current conversation
+
+        Returns:
+            Conversation ID or None if no active conversation
+        """
+        if self.current_conversation:
+            return self.current_conversation.id
+        return None
