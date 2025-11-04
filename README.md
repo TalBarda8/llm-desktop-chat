@@ -2,6 +2,40 @@
 
 A desktop chat application that connects to local LLM models via the Ollama API. Chat privately with AI models running entirely on your machine.
 
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Starting the Application](#starting-the-application)
+  - [Using the Chat Interface](#using-the-chat-interface)
+  - [Example Conversation](#example-conversation)
+- [Screenshots](#screenshots)
+- [Project Structure](#project-structure)
+- [Code Overview](#code-overview)
+  - [Key Components](#key-components)
+  - [How It Works](#how-it-works)
+- [Testing](#testing)
+  - [Running Tests](#running-tests)
+  - [Expected Test Output](#expected-test-output)
+  - [Test Coverage](#test-coverage)
+  - [Test Structure](#test-structure)
+  - [What's Tested](#whats-tested)
+  - [Writing New Tests](#writing-new-tests)
+- [Troubleshooting](#troubleshooting)
+  - [Cannot connect to Ollama](#cannot-connect-to-ollama)
+  - [No models found](#no-models-found)
+  - [Application won't start](#application-wont-start)
+  - [macOS Tkinter Error](#macos-tkinter-error-macos-15-1507-or-later-required)
+- [Configuration Options](#configuration-options)
+- [MVP Scope (Current Features)](#mvp-scope-current-features)
+- [Future Enhancements (Post-MVP)](#future-enhancements-post-mvp)
+- [Requirements](#requirements)
+- [License](#license)
+- [Contributing](#contributing)
+- [Acknowledgments](#acknowledgments)
+
 ## Features
 
 - **Private & Local**: All conversations happen on your machine - no data sent to external servers
