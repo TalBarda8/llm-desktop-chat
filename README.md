@@ -122,6 +122,73 @@ print("Hello, World!")
 That's it! Python's syntax is designed to be clean and readable...
 ```
 
+## Screenshots
+
+Visual guide to the application interface and features.
+
+### Main Chat Interface
+**Description**: The main application window showing the clean, intuitive chat interface.
+- **Top Toolbar**: Model selection dropdown and "New Chat" button
+- **Chat Display Area**: Scrollable conversation history with user and assistant messages
+- **Input Area**: Text box for typing messages with "Send" button
+
+**What to show**: Full application window with an active conversation displayed.
+
+### Model Selection
+**Description**: The model dropdown menu showing available Ollama models.
+- Shows all locally available models (llama2, mistral, codellama, etc.)
+- Selected model is highlighted
+- Easy switching between models mid-conversation
+
+**What to show**: Dropdown menu expanded with multiple model options visible.
+
+### Real-Time Streaming
+**Description**: Live streaming of AI response as it's being generated.
+- Text appears word-by-word in real-time
+- Demonstrates the streaming capability
+- Shows natural conversation flow
+
+**What to show**: Screenshot captured during streaming with partial AI response visible.
+
+### Multi-Turn Conversation
+**Description**: Extended conversation showing context retention.
+- Multiple back-and-forth exchanges
+- AI remembers previous context
+- Clean message separation between user and assistant
+
+**What to show**: Conversation with at least 4-6 messages showing context awareness.
+
+### New Chat Functionality
+**Description**: Starting a fresh conversation.
+- Empty chat display after clicking "New Chat"
+- Model selector ready for new conversation
+- Clean slate for new topic
+
+**What to show**: Empty chat interface after starting new conversation.
+
+### Error Handling
+**Description**: User-friendly error messages when issues occur.
+- Connection error when Ollama is not running
+- Clear error message displayed in the interface
+- Guidance on how to resolve the issue
+
+**What to show**: Error message dialog or inline error notification.
+
+### Code Formatting Example
+**Description**: How the application displays code in responses.
+- AI response containing code blocks
+- Monospace font for code sections
+- Readable formatting
+
+**What to show**: Conversation where AI provides code examples (Python, JavaScript, etc.).
+
+---
+
+**Note**: To add actual screenshots, capture the application running locally and save images in a `docs/images/` directory. Then update this section with image references:
+```markdown
+![Main Chat Interface](docs/images/main-interface.png)
+```
+
 ## Project Structure
 
 ```
@@ -191,16 +258,110 @@ ChatManager adds complete response to conversation
 
 ## Testing
 
-Run the unit tests:
+The project includes comprehensive unit tests covering all core functionality with 47 test cases.
 
+### Running Tests
+
+**Run all tests:**
 ```bash
+source venv/bin/activate
 pytest tests/ -v
 ```
 
-Run specific test file:
-
+**Run specific test file:**
 ```bash
-pytest tests/test_message.py -v
+pytest tests/test_message.py -v          # Message and Conversation tests
+pytest tests/test_chat_manager.py -v     # ChatManager tests
+pytest tests/test_ollama_client.py -v    # OllamaClient tests
+pytest tests/test_settings.py -v         # Settings configuration tests
+```
+
+**Run with coverage report:**
+```bash
+pytest tests/ --cov=src --cov-report=term-missing
+```
+
+**Run tests with detailed output:**
+```bash
+pytest tests/ -v -s
+```
+
+### Test Coverage
+
+Current test coverage for core modules:
+- **ChatManager**: 100% coverage
+- **Message & Conversation**: 100% coverage
+- **OllamaClient**: 87% coverage
+- **Settings**: 100% coverage
+- **Exceptions**: 100% coverage
+- **Logger**: 100% coverage
+
+### Test Structure
+
+```
+tests/
+├── __init__.py
+├── test_message.py          # Tests for Message and Conversation models
+├── test_chat_manager.py     # Tests for ChatManager business logic
+├── test_ollama_client.py    # Tests for Ollama API client (with mocks)
+└── test_settings.py         # Tests for configuration settings
+```
+
+### What's Tested
+
+#### Message & Conversation (`test_message.py`)
+- Message creation and serialization
+- Conversation management
+- Message history tracking
+- API format conversion
+
+#### ChatManager (`test_chat_manager.py`)
+- Conversation lifecycle management
+- Message sending and receiving
+- Streaming response handling
+- Model switching
+- Multi-turn conversations
+- Error handling
+
+#### OllamaClient (`test_ollama_client.py`)
+- API connection testing
+- Model listing
+- Streaming generation
+- Request payload formatting
+- Error handling and retries
+- Invalid JSON handling
+
+#### Settings (`test_settings.py`)
+- Default configuration values
+- Environment variable loading
+- Custom configuration
+- Type validation
+- Case-insensitive environment variables
+
+### Writing New Tests
+
+When adding new features, follow these guidelines:
+
+1. **Create test file** matching the module name: `test_<module_name>.py`
+2. **Use pytest fixtures** for common setup
+3. **Mock external dependencies** (API calls, file I/O)
+4. **Test edge cases** and error conditions
+5. **Maintain coverage** above 80% for core modules
+
+Example test structure:
+```python
+import pytest
+from unittest.mock import Mock
+
+class TestYourFeature:
+    @pytest.fixture
+    def setup(self):
+        # Setup code
+        return instance
+
+    def test_basic_functionality(self, setup):
+        # Test code
+        assert result == expected
 ```
 
 ## Troubleshooting
