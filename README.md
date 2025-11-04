@@ -12,7 +12,14 @@ A desktop chat application that connects to local LLM models via the Ollama API.
 
 ## Prerequisites
 
-1. **Python 3.8+** installed on your system
+1. **Python 3.10 or higher** installed on your system (Python 3.12+ recommended)
+
+   **macOS Users**: If you're on macOS Sequoia (15.0+), use Homebrew Python to avoid Tkinter compatibility issues:
+   ```bash
+   brew install python@3.12
+   ```
+   Then use `python3.12` instead of `python3` for all commands below.
+
 2. **Ollama** installed and running
    - Download from: https://ollama.ai
    - Install and start the Ollama service
@@ -29,13 +36,31 @@ A desktop chat application that connects to local LLM models via the Ollama API.
 ## Installation
 
 1. **Clone or download this repository**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/llm-desktop-chat.git
+   cd llm-desktop-chat
+   ```
 
-2. **Install Python dependencies**:
+2. **Create a virtual environment** (recommended):
+
+   For most systems:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+   For macOS Sequoia users with Homebrew Python:
+   ```bash
+   python3.12 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install Python dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Optional: Create a `.env` file for custom configuration**:
+4. **Optional: Create a `.env` file for custom configuration**:
    ```bash
    cp .env.example .env
    ```
@@ -52,11 +77,15 @@ A desktop chat application that connects to local LLM models via the Ollama API.
 
 ### Starting the Application
 
-From the project root directory:
+1. **Activate your virtual environment** (if you created one):
+   ```bash
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-```bash
-python -m src.main
-```
+2. **Run the application**:
+   ```bash
+   python -m src.main
+   ```
 
 ### Using the Chat Interface
 
@@ -190,7 +219,7 @@ ollama pull llama2
 
 ### Application won't start
 
-1. Check Python version (must be 3.8+):
+1. Check Python version (must be 3.10+):
    ```bash
    python --version
    ```
@@ -201,6 +230,31 @@ ollama pull llama2
    ```
 
 3. Check logs in `logs/app.log` for error details
+
+### macOS Tkinter Error: "macOS 15 (1507) or later required"
+
+This error occurs on macOS Sequoia when using the system Python with an outdated Tkinter version.
+
+**Solution**:
+1. Install Python via Homebrew:
+   ```bash
+   brew install python@3.12
+   ```
+
+2. Recreate your virtual environment with Homebrew Python:
+   ```bash
+   rm -rf venv
+   python3.12 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. Run the app:
+   ```bash
+   python -m src.main
+   ```
+
+**Why this happens**: macOS Sequoia (15.0+) requires Tkinter 9.0+, but system Python 3.9 includes an older version. Homebrew Python 3.12 includes the compatible Tkinter version.
 
 ## Configuration Options
 
@@ -239,13 +293,15 @@ All settings can be customized in `.env` file:
 
 ## Requirements
 
+**Python Version**: 3.10 or higher (3.12+ recommended for macOS Sequoia users)
+
 See `requirements.txt` for full list. Main dependencies:
 
 - `httpx` - HTTP client for API communication
 - `pydantic` - Data validation and settings
 - `pydantic-settings` - Settings management
 - `python-dotenv` - Environment variable loading
-- Tkinter - GUI framework (included with Python)
+- Tkinter - GUI framework (included with Python, requires version 9.0+ on macOS 15+)
 
 ## License
 
