@@ -7,7 +7,12 @@ A desktop chat application that connects to local LLM models via the Ollama API.
 - **Private & Local**: All conversations happen on your machine - no data sent to external servers
 - **Real-time Streaming**: See AI responses as they're generated
 - **Multiple Models**: Switch between different Ollama models on the fly
-- **Simple UI**: Clean, intuitive Tkinter-based interface
+- **Modern UI Design**: Clean, contemporary interface with professional styling
+  - Light and Dark theme support
+  - High-contrast colors for excellent readability
+  - Smooth hover effects on interactive elements
+  - Card-based layout with comfortable spacing
+  - Modern typography (Segoe UI font)
 - **Conversation Management**: Start new chats and maintain conversation context
 
 ## Prerequisites
@@ -102,10 +107,11 @@ This script automatically activates the virtual environment and launches the app
 ### Using the Chat Interface
 
 1. **Select a Model**: Use the dropdown in the top toolbar to choose your model
-2. **Type Your Message**: Enter your message in the text box at the bottom
-3. **Send**: Click "Send" or press Enter (Shift+Enter for new line)
-4. **View Response**: Watch the AI's response stream in real-time
-5. **New Chat**: Click "New Chat" to start a fresh conversation
+2. **Toggle Theme**: Click the "🌙 Dark" or "☀️ Light" button to switch between light and dark themes
+3. **Type Your Message**: Enter your message in the text box at the bottom
+4. **Send**: Click "Send →" or press Enter (Shift+Enter for new line)
+5. **View Response**: Watch the AI's response stream in real-time with modern styling
+6. **New Chat**: Click "✨ New Chat" to start a fresh conversation
 
 ### Example Conversation
 
@@ -124,15 +130,25 @@ That's it! Python's syntax is designed to be clean and readable...
 
 ## Screenshots
 
-Visual guide to the application interface and features.
+Visual guide to the modern, redesigned application interface.
 
-### Main Chat Interface
-**Description**: The main application window showing the clean, intuitive chat interface.
-- **Top Toolbar**: Model selection dropdown and "New Chat" button
-- **Chat Display Area**: Scrollable conversation history with user and assistant messages
-- **Input Area**: Text box for typing messages with "Send" button
+### Main Chat Interface (Light Theme)
+**Description**: The main application window with modern, clean design in light theme.
+- **Modern Top Toolbar**: Clean layout with model selector, theme toggle (🌙 Dark), and "✨ New Chat" button
+- **Card-Based Chat Display**: Professional card layout with comfortable spacing and modern typography
+- **Styled Input Area**: Contemporary input field with "Send →" button featuring hover effects
+- **High Contrast Colors**: Modern indigo blue for user messages, emerald green for assistant responses
 
-**What to show**: Full application window with an active conversation displayed.
+**What to show**: Full application window showcasing the modern light theme with card-based design.
+
+### Dark Theme Interface
+**Description**: The same interface in elegant dark mode for reduced eye strain.
+- **Dark Surface Colors**: Professional dark grays with proper contrast
+- **Enhanced Readability**: Optimized text colors for dark backgrounds
+- **Modern Accents**: Brighter purple and green tones for dark theme
+- **Seamless Theme Switching**: Toggle between themes without losing conversation
+
+**What to show**: Application in dark mode showing the cohesive color scheme.
 
 ### Model Selection
 **Description**: The model dropdown menu showing available Ollama models.
@@ -453,6 +469,10 @@ All settings can be customized in `.env` file:
 - ✅ Model selection
 - ✅ New chat functionality
 - ✅ Connection error handling
+- ✅ **Modern UI Design** with professional styling
+- ✅ **Light & Dark Theme** support with seamless switching
+- ✅ **Hover Effects** on interactive elements
+- ✅ **High Contrast Colors** for excellent readability
 
 ## Future Enhancements (Post-MVP)
 
@@ -463,8 +483,9 @@ All settings can be customized in `.env` file:
 - 💡 Export conversations (markdown, PDF)
 - 💡 Custom system prompts
 - 💡 Model parameter tuning (temperature, top_p)
-- 💡 Dark mode theme
 - 💡 Keyboard shortcuts
+- 💡 Rounded corners for buttons and inputs (limited by Tkinter)
+- 💡 More theme options (custom color schemes)
 
 ## Requirements
 

@@ -1,5 +1,5 @@
 """
-Main GUI application using Tkinter
+Main GUI application using Tkinter with modern UI design
 """
 import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
@@ -13,34 +13,72 @@ import threading
 logger = setup_logger("gui", "logs/app.log")
 
 
+class ModernColors:
+    """Modern color scheme for light and dark themes"""
+
+    # Light Theme (Default)
+    LIGHT_BG = "#FFFFFF"
+    LIGHT_SURFACE = "#F8F9FA"
+    LIGHT_SURFACE_VARIANT = "#E9ECEF"
+    LIGHT_PRIMARY = "#4F46E5"  # Modern indigo
+    LIGHT_PRIMARY_HOVER = "#4338CA"
+    LIGHT_SUCCESS = "#10B981"  # Modern green
+    LIGHT_SUCCESS_HOVER = "#059669"
+    LIGHT_TEXT_PRIMARY = "#1F2937"
+    LIGHT_TEXT_SECONDARY = "#6B7280"
+    LIGHT_BORDER = "#E5E7EB"
+    LIGHT_USER_MSG = "#4F46E5"
+    LIGHT_ASSISTANT_MSG = "#10B981"
+
+    # Dark Theme
+    DARK_BG = "#1F2937"
+    DARK_SURFACE = "#111827"
+    DARK_SURFACE_VARIANT = "#374151"
+    DARK_PRIMARY = "#6366F1"
+    DARK_PRIMARY_HOVER = "#818CF8"
+    DARK_SUCCESS = "#34D399"
+    DARK_SUCCESS_HOVER = "#6EE7B7"
+    DARK_TEXT_PRIMARY = "#F9FAFB"
+    DARK_TEXT_SECONDARY = "#D1D5DB"
+    DARK_BORDER = "#374151"
+    DARK_USER_MSG = "#818CF8"
+    DARK_ASSISTANT_MSG = "#34D399"
+
+
 class ChatApplication:
     """
-    Main application window for the LLM chat interface
+    Main application window for the LLM chat interface with modern UI
 
     This class creates and manages the Tkinter GUI, including:
     - Model selection dropdown
     - Chat display area
     - Message input field
     - Send button and new chat button
+    - Modern styling with hover effects and rounded corners
     """
 
-    def __init__(self, chat_manager: ChatManager):
+    def __init__(self, chat_manager: ChatManager, theme: str = "light"):
         """
         Initialize the chat application
 
         Args:
             chat_manager: ChatManager instance for handling chat logic
+            theme: UI theme - "light" or "dark" (default: "light")
         """
         self.chat_manager = chat_manager
-        self.is_processing = False  # Flag to prevent multiple simultaneous requests
+        self.is_processing = False
+        self.theme = theme
+        self.colors = ModernColors()
 
         # Create main window
         self.window = tk.Tk()
         self.window.title(settings.window_title)
         self.window.geometry(f"{settings.window_width}x{settings.window_height}")
+        self.window.minsize(800, 600)
 
-        # Configure window styling
-        self.window.configure(bg="#f0f0f0")
+        # Configure window styling based on theme
+        bg_color = self.colors.LIGHT_BG if theme == "light" else self.colors.DARK_BG
+        self.window.configure(bg=bg_color)
 
         # Setup UI components
         self._setup_ui()
@@ -53,115 +91,280 @@ class ChatApplication:
 
         logger.info("Chat application initialized")
 
-    def _setup_ui(self) -> None:
-        """Create and layout all UI components"""
+    def _get_theme_colors(self):
+        """Get colors based on current theme"""
+        if self.theme == "dark":
+            return {
+                'bg': self.colors.DARK_BG,
+                'surface': self.colors.DARK_SURFACE,
+                'surface_variant': self.colors.DARK_SURFACE_VARIANT,
+                'primary': self.colors.DARK_PRIMARY,
+                'primary_hover': self.colors.DARK_PRIMARY_HOVER,
+                'success': self.colors.DARK_SUCCESS,
+                'success_hover': self.colors.DARK_SUCCESS_HOVER,
+                'text_primary': self.colors.DARK_TEXT_PRIMARY,
+                'text_secondary': self.colors.DARK_TEXT_SECONDARY,
+                'border': self.colors.DARK_BORDER,
+                'user_msg': self.colors.DARK_USER_MSG,
+                'assistant_msg': self.colors.DARK_ASSISTANT_MSG
+            }
+        else:
+            return {
+                'bg': self.colors.LIGHT_BG,
+                'surface': self.colors.LIGHT_SURFACE,
+                'surface_variant': self.colors.LIGHT_SURFACE_VARIANT,
+                'primary': self.colors.LIGHT_PRIMARY,
+                'primary_hover': self.colors.LIGHT_PRIMARY_HOVER,
+                'success': self.colors.LIGHT_SUCCESS,
+                'success_hover': self.colors.LIGHT_SUCCESS_HOVER,
+                'text_primary': self.colors.LIGHT_TEXT_PRIMARY,
+                'text_secondary': self.colors.LIGHT_TEXT_SECONDARY,
+                'border': self.colors.LIGHT_BORDER,
+                'user_msg': self.colors.LIGHT_USER_MSG,
+                'assistant_msg': self.colors.LIGHT_ASSISTANT_MSG
+            }
 
-        # ============= TOP TOOLBAR =============
-        toolbar = tk.Frame(self.window, bg="#2c3e50", height=50)
+    def _setup_ui(self) -> None:
+        """Create and layout all UI components with modern styling"""
+        colors = self._get_theme_colors()
+
+        # ============= TOP TOOLBAR (MODERN DESIGN) =============
+        toolbar = tk.Frame(self.window, bg=colors['surface'], height=70)
         toolbar.pack(side=tk.TOP, fill=tk.X, padx=0, pady=0)
+        toolbar.pack_propagate(False)
+
+        # Left section - Model selector
+        left_section = tk.Frame(toolbar, bg=colors['surface'])
+        left_section.pack(side=tk.LEFT, padx=20, pady=15)
 
         # Model selector label
         model_label = tk.Label(
-            toolbar,
-            text="Model:",
-            bg="#2c3e50",
-            fg="white",
-            font=("Arial", 10)
+            left_section,
+            text="Model",
+            bg=colors['surface'],
+            fg=colors['text_secondary'],
+            font=("Segoe UI", 10)
         )
-        model_label.pack(side=tk.LEFT, padx=(10, 5), pady=10)
+        model_label.pack(side=tk.LEFT, padx=(0, 10))
 
-        # Model dropdown
+        # Model dropdown with modern styling
         self.model_var = tk.StringVar(value=settings.default_model)
+
+        # Style for combobox
+        style = ttk.Style()
+        style.theme_use('clam')
+        style.configure(
+            'Modern.TCombobox',
+            fieldbackground=colors['bg'],
+            background=colors['surface_variant'],
+            foreground=colors['text_primary'],
+            borderwidth=1,
+            relief='solid',
+            padding=8
+        )
+
         self.model_selector = ttk.Combobox(
-            toolbar,
+            left_section,
             textvariable=self.model_var,
             state="readonly",
-            width=20
+            width=25,
+            style='Modern.TCombobox',
+            font=("Segoe UI", 10)
         )
-        self.model_selector.pack(side=tk.LEFT, padx=5, pady=10)
+        self.model_selector.pack(side=tk.LEFT)
         self.model_selector.bind("<<ComboboxSelected>>", self._on_model_change)
 
-        # New chat button
-        self.new_chat_btn = tk.Button(
-            toolbar,
-            text="New Chat",
-            command=self._on_new_chat,
-            bg="#3498db",
-            fg="white",
-            font=("Arial", 10, "bold"),
+        # Right section - Theme toggle and New chat button
+        right_section = tk.Frame(toolbar, bg=colors['surface'])
+        right_section.pack(side=tk.RIGHT, padx=20, pady=15)
+
+        # Theme toggle button
+        self.theme_btn = tk.Button(
+            right_section,
+            text="🌙 Dark" if self.theme == "light" else "☀️ Light",
+            command=self._toggle_theme,
+            bg=colors['surface_variant'],
+            fg=colors['text_primary'],
+            font=("Segoe UI", 10),
             relief=tk.FLAT,
-            padx=15,
-            pady=5,
-            cursor="hand2"
+            padx=20,
+            pady=10,
+            cursor="hand2",
+            borderwidth=0
         )
-        self.new_chat_btn.pack(side=tk.RIGHT, padx=10, pady=10)
+        self.theme_btn.pack(side=tk.LEFT, padx=(0, 10))
+        self._add_button_hover(self.theme_btn, colors['surface_variant'], colors['border'])
 
-        # ============= CHAT DISPLAY AREA =============
-        chat_frame = tk.Frame(self.window, bg="white")
-        chat_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        # New chat button with modern primary style
+        self.new_chat_btn = tk.Button(
+            right_section,
+            text="✨ New Chat",
+            command=self._on_new_chat,
+            bg=colors['primary'],
+            fg="white",
+            font=("Segoe UI", 10, "bold"),
+            relief=tk.FLAT,
+            padx=20,
+            pady=10,
+            cursor="hand2",
+            borderwidth=0
+        )
+        self.new_chat_btn.pack(side=tk.LEFT)
+        self._add_button_hover(self.new_chat_btn, colors['primary'], colors['primary_hover'])
 
-        # Scrolled text widget for displaying chat messages
+        # ============= CHAT DISPLAY AREA (MODERN CARD DESIGN) =============
+        # Container with padding
+        chat_container = tk.Frame(self.window, bg=colors['bg'])
+        chat_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+        # Chat frame (card style)
+        chat_frame = tk.Frame(
+            chat_container,
+            bg=colors['surface'],
+            highlightbackground=colors['border'],
+            highlightthickness=1
+        )
+        chat_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Scrolled text widget with modern styling
         self.chat_display = scrolledtext.ScrolledText(
             chat_frame,
             wrap=tk.WORD,
             width=80,
             height=20,
-            font=("Arial", 11),
-            bg="white",
-            fg="#2c3e50",
+            font=("Segoe UI", 11),
+            bg=colors['surface'],
+            fg=colors['text_primary'],
             relief=tk.FLAT,
-            padx=10,
-            pady=10
+            padx=20,
+            pady=20,
+            borderwidth=0,
+            insertbackground=colors['primary']
         )
         self.chat_display.pack(fill=tk.BOTH, expand=True)
 
-        # Configure text tags for styling different message types
-        self.chat_display.tag_config("user", foreground="#2980b9", font=("Arial", 11, "bold"))
-        self.chat_display.tag_config("assistant", foreground="#27ae60", font=("Arial", 11, "bold"))
-        self.chat_display.tag_config("message", foreground="#2c3e50", font=("Arial", 11))
-        self.chat_display.tag_config("separator", foreground="#bdc3c7")
+        # Configure text tags for modern styling
+        self.chat_display.tag_config(
+            "user",
+            foreground=colors['user_msg'],
+            font=("Segoe UI", 12, "bold"),
+            spacing1=10
+        )
+        self.chat_display.tag_config(
+            "assistant",
+            foreground=colors['assistant_msg'],
+            font=("Segoe UI", 12, "bold"),
+            spacing1=10
+        )
+        self.chat_display.tag_config(
+            "message",
+            foreground=colors['text_primary'],
+            font=("Segoe UI", 11),
+            spacing1=5,
+            spacing3=10
+        )
+        self.chat_display.tag_config(
+            "separator",
+            foreground=colors['border']
+        )
 
         # Make chat display read-only
         self.chat_display.config(state=tk.DISABLED)
 
-        # ============= INPUT AREA =============
-        input_frame = tk.Frame(self.window, bg="#ecf0f1", height=100)
-        input_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=(0, 10))
+        # ============= INPUT AREA (MODERN DESIGN) =============
+        input_container = tk.Frame(self.window, bg=colors['bg'])
+        input_container.pack(side=tk.BOTTOM, fill=tk.X, padx=20, pady=(0, 20))
 
-        # Message input field
+        # Input frame with card styling
+        input_frame = tk.Frame(
+            input_container,
+            bg=colors['surface'],
+            highlightbackground=colors['border'],
+            highlightthickness=1
+        )
+        input_frame.pack(fill=tk.X)
+
+        # Message input field with modern styling
         self.message_input = tk.Text(
             input_frame,
             height=3,
             width=80,
-            font=("Arial", 11),
+            font=("Segoe UI", 11),
             wrap=tk.WORD,
             relief=tk.FLAT,
-            padx=10,
-            pady=10
+            bg=colors['surface'],
+            fg=colors['text_primary'],
+            padx=15,
+            pady=15,
+            borderwidth=0,
+            insertbackground=colors['primary']
         )
-        self.message_input.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
+        self.message_input.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Bind Enter key to send message (Shift+Enter for new line)
+        # Bind Enter key to send message
         self.message_input.bind("<Return>", self._on_enter_key)
 
-        # Send button
+        # Send button container
+        button_container = tk.Frame(input_frame, bg=colors['surface'])
+        button_container.pack(side=tk.RIGHT, padx=15, pady=15)
+
+        # Send button with modern success color
         self.send_btn = tk.Button(
-            input_frame,
-            text="Send",
+            button_container,
+            text="Send →",
             command=self._on_send,
-            bg="#27ae60",
+            bg=colors['success'],
             fg="white",
-            font=("Arial", 12, "bold"),
-            width=10,
+            font=("Segoe UI", 11, "bold"),
             relief=tk.FLAT,
             cursor="hand2",
-            padx=10,
-            pady=10
+            padx=25,
+            pady=12,
+            borderwidth=0
         )
-        self.send_btn.pack(side=tk.RIGHT)
+        self.send_btn.pack()
+        self._add_button_hover(self.send_btn, colors['success'], colors['success_hover'])
 
         # Focus on input field
         self.message_input.focus()
+
+    def _add_button_hover(self, button, normal_color, hover_color):
+        """Add hover effect to button"""
+        def on_enter(e):
+            if button['state'] != 'disabled':
+                button.config(bg=hover_color)
+
+        def on_leave(e):
+            if button['state'] != 'disabled':
+                button.config(bg=normal_color)
+
+        button.bind("<Enter>", on_enter)
+        button.bind("<Leave>", on_leave)
+
+    def _toggle_theme(self):
+        """Toggle between light and dark themes"""
+        self.theme = "dark" if self.theme == "light" else "light"
+
+        # Save current conversation state
+        messages = self.chat_manager.get_messages()
+
+        # Rebuild UI with new theme
+        for widget in self.window.winfo_children():
+            widget.destroy()
+
+        self._setup_ui()
+
+        # Restore conversation
+        if messages:
+            self.chat_display.config(state=tk.NORMAL)
+            for msg in messages:
+                sender = "You" if msg.role == Role.USER else "Assistant"
+                tag = "user" if msg.role == Role.USER else "assistant"
+                self._display_message(sender, msg.content, tag)
+            self.chat_display.config(state=tk.DISABLED)
+
+        self._load_models()
+        logger.info(f"Theme switched to {self.theme}")
 
     def _load_models(self) -> None:
         """Load available models from Ollama and populate dropdown"""
@@ -241,7 +444,7 @@ class ChatApplication:
         self._set_input_enabled(False)
         self.is_processing = True
 
-        # Send message in background thread to prevent UI freezing
+        # Send message in background thread
         thread = threading.Thread(
             target=self._send_message_async,
             args=(message,),
@@ -336,16 +539,22 @@ class ChatApplication:
 
     def _set_input_enabled(self, enabled: bool) -> None:
         """
-        Enable or disable input controls
+        Enable or disable input controls with visual feedback
 
         Args:
             enabled: True to enable, False to disable
         """
+        colors = self._get_theme_colors()
         state = tk.NORMAL if enabled else tk.DISABLED
+
         self.message_input.config(state=state)
         self.send_btn.config(state=state)
 
-        if enabled:
+        # Visual feedback for disabled state
+        if not enabled:
+            self.send_btn.config(bg=colors['border'])
+        else:
+            self.send_btn.config(bg=colors['success'])
             self.message_input.focus()
 
     def run(self) -> None:
