@@ -329,6 +329,96 @@ pytest tests/ --cov=src --cov-report=term-missing
 pytest tests/ -v -s
 ```
 
+### Expected Test Output
+
+When running the full test suite with `pytest tests/ -v`, you should see all 62 tests pass:
+
+```
+============================= test session starts ==============================
+platform darwin -- Python 3.12.12, pytest-8.4.2, pluggy-1.6.0
+cachedir: .pytest_cache
+rootdir: /path/to/llm-desktop-chat
+configfile: pytest.ini
+plugins: anyio-4.11.0, cov-7.0.0
+collected 62 items
+
+tests/test_chat_manager.py::TestChatManager::test_initialization PASSED  [  1%]
+tests/test_chat_manager.py::TestChatManager::test_start_new_conversation_default_model PASSED [  3%]
+tests/test_chat_manager.py::TestChatManager::test_start_new_conversation_custom_model PASSED [  4%]
+tests/test_chat_manager.py::TestChatManager::test_send_message_creates_conversation_if_none PASSED [  6%]
+tests/test_chat_manager.py::TestChatManager::test_send_message_adds_user_message PASSED [  8%]
+tests/test_chat_manager.py::TestChatManager::test_send_message_streams_response PASSED [  9%]
+tests/test_chat_manager.py::TestChatManager::test_send_message_adds_assistant_response PASSED [ 11%]
+tests/test_chat_manager.py::TestChatManager::test_send_message_calls_ollama_with_correct_params PASSED [ 12%]
+tests/test_chat_manager.py::TestChatManager::test_send_message_handles_exception PASSED [ 14%]
+tests/test_chat_manager.py::TestChatManager::test_set_model PASSED       [ 16%]
+tests/test_chat_manager.py::TestChatManager::test_set_model_updates_conversation PASSED [ 17%]
+tests/test_chat_manager.py::TestChatManager::test_get_messages_no_conversation PASSED [ 19%]
+tests/test_chat_manager.py::TestChatManager::test_get_messages_with_conversation PASSED [ 20%]
+tests/test_chat_manager.py::TestChatManager::test_clear_conversation PASSED [ 22%]
+tests/test_chat_manager.py::TestChatManager::test_clear_conversation_no_conversation PASSED [ 24%]
+tests/test_chat_manager.py::TestChatManager::test_multi_turn_conversation PASSED [ 25%]
+tests/test_conversation_storage.py::TestConversationStorage::test_initialization PASSED [ 27%]
+tests/test_conversation_storage.py::TestConversationStorage::test_save_conversation PASSED [ 29%]
+tests/test_conversation_storage.py::TestConversationStorage::test_save_conversation_generates_title PASSED [ 30%]
+tests/test_conversation_storage.py::TestConversationStorage::test_save_conversation_truncates_long_title PASSED [ 32%]
+tests/test_conversation_storage.py::TestConversationStorage::test_load_conversation PASSED [ 33%]
+tests/test_conversation_storage.py::TestConversationStorage::test_load_nonexistent_conversation PASSED [ 35%]
+tests/test_conversation_storage.py::TestConversationStorage::test_list_conversations PASSED [ 37%]
+tests/test_conversation_storage.py::TestConversationStorage::test_list_conversations_sorted_by_updated_at PASSED [ 38%]
+tests/test_conversation_storage.py::TestConversationStorage::test_delete_conversation PASSED [ 40%]
+tests/test_conversation_storage.py::TestConversationStorage::test_delete_nonexistent_conversation PASSED [ 41%]
+tests/test_conversation_storage.py::TestConversationStorage::test_conversation_exists PASSED [ 43%]
+tests/test_conversation_storage.py::TestConversationStorage::test_generate_title_no_user_messages PASSED [ 45%]
+tests/test_conversation_storage.py::TestConversationStorage::test_save_updates_existing_conversation PASSED [ 46%]
+tests/test_conversation_storage.py::TestConversationStorage::test_conversation_metadata_includes_timestamps PASSED [ 48%]
+tests/test_conversation_storage.py::TestConversationStorage::test_message_preservation PASSED [ 50%]
+tests/test_message.py::TestMessage::test_create_message PASSED           [ 51%]
+tests/test_message.py::TestMessage::test_message_to_dict PASSED          [ 53%]
+tests/test_message.py::TestConversation::test_create_conversation PASSED [ 54%]
+tests/test_message.py::TestConversation::test_add_message PASSED         [ 56%]
+tests/test_message.py::TestConversation::test_get_messages_for_api PASSED [ 58%]
+tests/test_message.py::TestConversation::test_clear_conversation PASSED  [ 59%]
+tests/test_ollama_client.py::TestOllamaClient::test_initialization PASSED [ 61%]
+tests/test_ollama_client.py::TestOllamaClient::test_initialization_strips_trailing_slash PASSED [ 62%]
+tests/test_ollama_client.py::TestOllamaClient::test_check_connection_success PASSED [ 64%]
+tests/test_ollama_client.py::TestOllamaClient::test_check_connection_failure PASSED [ 66%]
+tests/test_ollama_client.py::TestOllamaClient::test_list_models_success PASSED [ 67%]
+tests/test_ollama_client.py::TestOllamaClient::test_list_models_empty PASSED [ 69%]
+tests/test_ollama_client.py::TestOllamaClient::test_list_models_http_error PASSED [ 70%]
+tests/test_ollama_client.py::TestOllamaClient::test_generate_stream_success PASSED [ 72%]
+tests/test_ollama_client.py::TestOllamaClient::test_generate_stream_with_empty_content PASSED [ 74%]
+tests/test_ollama_client.py::TestOllamaClient::test_generate_stream_invalid_json PASSED [ 75%]
+tests/test_ollama_client.py::TestOllamaClient::test_generate_stream_http_error PASSED [ 77%]
+tests/test_ollama_client.py::TestOllamaClient::test_generate_stream_request_payload PASSED [ 79%]
+tests/test_ollama_client.py::TestOllamaClient::test_close_connection PASSED [ 80%]
+tests/test_settings.py::TestSettings::test_default_values PASSED         [ 82%]
+tests/test_settings.py::TestSettings::test_custom_ollama_base_url PASSED [ 83%]
+tests/test_settings.py::TestSettings::test_custom_default_model PASSED   [ 85%]
+tests/test_settings.py::TestSettings::test_custom_window_title PASSED    [ 87%]
+tests/test_settings.py::TestSettings::test_custom_window_dimensions PASSED [ 88%]
+tests/test_settings.py::TestSettings::test_custom_log_level PASSED       [ 90%]
+tests/test_settings.py::TestSettings::test_custom_log_file PASSED        [ 91%]
+tests/test_settings.py::TestSettings::test_case_insensitive_env_vars PASSED [ 93%]
+tests/test_settings.py::TestSettings::test_multiple_custom_settings PASSED [ 95%]
+tests/test_settings.py::TestSettings::test_invalid_window_width_type PASSED [ 96%]
+tests/test_settings.py::TestSettings::test_invalid_window_height_type PASSED [ 98%]
+tests/test_settings.py::TestSettings::test_settings_mutable_after_creation PASSED [100%]
+
+============================== 62 passed in 0.25s ==============================
+```
+
+**What this output shows:**
+- ✅ All 62 tests passed successfully
+- ✅ Tests cover 5 modules: ChatManager (16 tests), ConversationStorage (15 tests), Message/Conversation (6 tests), OllamaClient (13 tests), Settings (12 tests)
+- ✅ Execution time: ~0.25 seconds (very fast!)
+- ✅ Progress indicators show percentage completion for each test
+
+If you see any failures, check the detailed error messages and ensure:
+1. Your virtual environment is activated
+2. All dependencies are installed (`pip install -r requirements.txt`)
+3. You're running tests from the project root directory
+
 ### Test Coverage
 
 Current test coverage for core modules (as of latest test run):
